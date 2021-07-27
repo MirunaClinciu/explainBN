@@ -166,7 +166,7 @@ random_evidence = lambda model, evidence_nodes : \
    {node : np.random.choice(list(model.states[node])) \
     for node in evidence_nodes if np.random.rand() < 0.5}
 
-def introduce_error(model, evidence, th = 0.1):
+def introduce_error(model, target, evidence, th = 0.1):
 
   # Compute probability of target
   p_original = prob(model, target, evidence)
