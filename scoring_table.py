@@ -3,6 +3,7 @@ from .utilities import get_factor_from_scope, create_trivial_argument, get_adjac
 
 from itertools import product, combinations
 from collections import defaultdict, namedtuple
+from functools import reduce
 
 import numpy as np
 
