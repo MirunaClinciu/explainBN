@@ -162,7 +162,7 @@ def get_adjacent_factors_scope(model, node):
 
 
 # ERROR INTRODUCTION
-def random_evidence = lambda model, evidence_nodes : 
+random_evidence = lambda model, evidence_nodes : 
    {node : np.random.choice(list(model.states[node])) \
     for node in evidence_nodes if np.random.rand() < 0.5}
 
