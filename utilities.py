@@ -1,5 +1,7 @@
-import numpy as np
 from itertools import product, combinations, chain, tee, islice
+
+import numpy as np
+import networkx as nx
 
 from pgmpy.inference import VariableElimination
 from pgmpy.factors.discrete import DiscreteFactor
