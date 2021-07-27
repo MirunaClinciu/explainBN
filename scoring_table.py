@@ -2,6 +2,8 @@ from .utilities import desextremize, factor_argmax
 from .utilities import get_factor_from_scope
 
 from itertools import product
+from collections import defaultdict, namedtuple
+
 import numpy as np
 
 # Link contribution
