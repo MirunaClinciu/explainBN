@@ -1,3 +1,6 @@
+import wget
+import zipfile
+
 #MAIN UTILITY
 dne_gist_urls = {
     "three_nations" : "https://gist.githubusercontent.com/Jsevillamol/55aabeb9962d22db05c291a746cf7bad/raw/f141df25463f05ccab44576eb8a8ae86fb05ae9b/three_nations.dne"
@@ -14,10 +17,9 @@ def load_network(name):
 
   if network_name in dne_gist_urls:
     url = dne_gist_urls[network_name]
-    !wget $url -q
-    fn = f"{network_name}.dne"
+    fn = wget.download(url)
     model = read_dne(fn)
-    !rm $fn
+    os.remove(fn)
 
     # Manually add states
     model.states = {}
@@ -28,12 +30,13 @@ def load_network(name):
 
   else:
     url = f"https://www.bnlearn.com/bnrepository/{network_name}/{network_name}.bif.gz"
-    !wget $url -q
-    fn = f"{network_name}.bif.gz"
-    !gzip -qd -f $fn -q
-    fn = f"{network_name}.bif"
+    fn = wget.download(url)
+    with zipfile.ZipFile(fn,"r") as zip_ref:
+       zip_ref.extractall("sample_bn")
+    
+    fn = f"sample_bn/{network_name}.bif"
     reader = BIFReader(fn)
-    !rm $fn
+    os.remove(fn)
     model = reader.get_model()
     model.states = reader.get_states()
 
