@@ -1,4 +1,4 @@
-from .utilities import desextremize, factor_argmax
+from .utilities import desextremize, factor_argmax, init_delta
 from .utilities import get_factor_from_scope, create_trivial_argument, get_adjacent_factors_scope, get_endpoints, is_endpoint, factor_distance
 
 from itertools import product, combinations
