@@ -1,5 +1,5 @@
-from .explainBN.utilities import desextremize, factor_argmax
-from .explainBN.utilities import get_factor_from_scope
+from .utilities import desextremize, factor_argmax
+from .utilities import get_factor_from_scope
 
 from itertools import product
 
