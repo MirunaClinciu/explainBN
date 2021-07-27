@@ -1,3 +1,9 @@
+import numpy as np
+from itertools import product, combinations, chain, tee, islice
+
+from pgmpy.inference import VariableElimination
+from pgmpy.factors.discrete import DiscreteFactor
+
 # GENERAL UTILITIES
 def powerset(iterable):
     """
