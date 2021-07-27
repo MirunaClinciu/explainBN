@@ -2,6 +2,7 @@ from itertools import product, combinations, chain, tee, islice
 
 import numpy as np
 import networkx as nx
+import copy
 
 from pgmpy.inference import VariableElimination
 from pgmpy.factors.discrete import DiscreteFactor
