@@ -6,6 +6,7 @@ from collections import defaultdict, namedtuple
 from functools import reduce
 
 import numpy as np
+import networkx as nx
 
 # Link contribution
 def compute_link_contribution(model, factor, incoming_messages, target):
