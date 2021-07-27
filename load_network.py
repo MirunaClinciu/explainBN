@@ -1,13 +1,18 @@
 import wget
 import zipfile
+import os
+import pandas as pd
+
+from pgmpy.readwrite import BIFReader
+from pgmpy.inference import VariableElimination
 
 #MAIN UTILITY
 dne_gist_urls = {
     "three_nations" : "https://gist.githubusercontent.com/Jsevillamol/55aabeb9962d22db05c291a746cf7bad/raw/f141df25463f05ccab44576eb8a8ae86fb05ae9b/three_nations.dne"
 }
 
-def load_network(network_name):
-  """ Download a network from the internet, convert it to PGMPY, 
+def load_network(network_name, verbose=False):
+  """ Download a network from the internet, convert it to a PGMPY Bayesian Network, 
       select a target node, attach verbal explanations if available
       Available networks: "asia", "cancer", "earthquake", "sachs", "survey", 
                           "alarm", "child", "three_nations", "barley", 
@@ -30,13 +35,12 @@ def load_network(network_name):
 
   else:
     url = f"https://www.bnlearn.com/bnrepository/{network_name}/{network_name}.bif.gz"
-    fn = wget.download(url)
-    with zipfile.ZipFile(fn,"r") as zip_ref:
-       zip_ref.extractall("sample_bn")
-    
-    fn = f"sample_bn/{network_name}.bif"
+    os.system(f"wget {url} -q")
+    fn = f"{network_name}.bif.gz"
+    os.system(f"gzip -qd -f {fn} -q")
+    fn = f"{network_name}.bif"
     reader = BIFReader(fn)
-    os.remove(fn)
+    os.system(f"rm {fn}")
     model = reader.get_model()
     model.states = reader.get_states()
 
@@ -82,12 +86,12 @@ def load_network(network_name):
   for evidence_node in evidence_nodes:
     assert evidence_node in model.nodes()
 
-  print(f"Number of nodes = {len(model.nodes)}")
-  print(f"Number of edges = {len(model.edges)}")
+  if verbose:
+    print(f"Number of nodes = {len(model.nodes)}")
+    print(f"Number of edges = {len(model.edges)}")
 
-
-  print(f"target = {target}")
-  print(f"evidence_nodes = {evidence_nodes}")
+    print(f"target = {target}")
+    print(f"evidence_nodes = {evidence_nodes}")
 
   # Add explanation of nodes
   if network_name == 'asia':
