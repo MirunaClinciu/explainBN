@@ -146,3 +146,42 @@ def draw_model(model, arguments=[], argument=None):
           node_color = node_color_map,
           edge_color = edge_color_map,
           font_weight = 'bold')
+  
+# CONTROL VISUALIZATION
+import ipywidgets
+def display_control_visualization(model, target, evidence_nodes):
+ evidence_widgets = {}
+   for node in evidence_nodes:
+     assert 'UNKNOWN' not in test_model.states[node]
+     w = ipywidgets.Dropdown(
+         options=test_model.states[node] + ['UNKNOWN'],
+         value='UNKNOWN',
+         description= node,
+         disabled=False,
+     )
+     display(w)
+     evidence_widgets[node] = w
+
+
+   explanation = test_model.explanation_dictionary[target]["explanation"]
+   p = prob(test_model, target, {})
+   output_w = ipywidgets.Text(f"{p*100:0.2f}%", description=f"probability")
+   output_w.disabled = True
+
+   def on_button_bn_clicked(b):
+     #clear_output()
+     evidence = {node:w.value for node,w in evidence_widgets.items() 
+                 if w.value != 'UNKNOWN'}
+
+     p = prob(test_model, target, evidence)
+
+     output_w.disabled = False
+     output_w.value = f"{p*100:0.2f}%"
+     output_w.disabled = True
+
+   button_bn = ipywidgets.Button(description='Enter evidence')
+   button_bn.on_click(on_button_bn_clicked)
+
+   display(button_bn)
+   print(f"The probability that {explanation} is ")
+   display(output_w)
