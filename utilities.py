@@ -159,3 +159,37 @@ def get_adjacent_factors_scope(model, node):
   lower_factors = frozenset(frozenset(model.get_cpds(child).scope()) 
                    for child in model.get_children(node))
   return frozenset([upper_factor]) | lower_factors
+
+
+# ERROR INTRODUCTION
+def random_evidence = lambda model, evidence_nodes : 
+   {node : np.random.choice(list(model.states[node])) \
+    for node in evidence_nodes if np.random.rand() < 0.5}
+
+def introduce_error(model, evidence, th = 0.1):
+
+  # Compute probability of target
+  p_original = prob(model, target, evidence)
+  s_original = from_prob_to_logodd(p_original)
+
+  # Try random perturbations until we find one that  
+  # significantly affects the bottom line
+  p_perturbed = p_original
+  s_perturbed = from_prob_to_logodd(p_perturbed)
+
+  assert np.abs(s_original - s_perturbed) < th, "At the start of the loop the two logodd scores should match!"
+
+  while np.abs(s_original - s_perturbed) < th:
+
+    # Introduce random peturbation
+    perturbed_model = copy.deepcopy(model)
+    perturbed_node = np.random.choice(model.nodes)
+    perturbed_cpd = model.get_cpds(perturbed_node).copy()
+    perturbed_cpd.values = np.random.permutation(perturbed_cpd.values)
+    perturbed_model.add_cpds(perturbed_cpd)
+
+    # Compute probability of target after peturbation
+    p_perturbed = prob(perturbed_model, target, evidence)
+    s_perturbed = from_prob_to_logodd(p_perturbed)
+    
+  return perturbed_model, perturbed_node
