@@ -6,7 +6,7 @@ dne_gist_urls = {
     "three_nations" : "https://gist.githubusercontent.com/Jsevillamol/55aabeb9962d22db05c291a746cf7bad/raw/f141df25463f05ccab44576eb8a8ae86fb05ae9b/three_nations.dne"
 }
 
-def load_network(name):
+def load_network(network_name):
   """ Download a network from the internet, convert it to PGMPY, 
       select a target node, attach verbal explanations if available
       Available networks: "asia", "cancer", "earthquake", "sachs", "survey", 
@@ -288,6 +288,8 @@ def load_network(name):
     model.baselines[node] = v.query(variables=[node], 
                                     evidence={}, 
                                     show_progress=False)
+    
+  return model, target, evidence_nodes
 
 # READ DNE FILES
 rhs = lambda s : re.match(r".*(.*) = (.*).*", s).group(2).strip(";")
