@@ -2,6 +2,7 @@ from .utilities import desextremize, factor_argmax
 from .utilities import get_factor_from_scope
 
 from itertools import product
+import numpy as np
 
 # Link contribution
 def compute_link_contribution(model, factor, incoming_messages, target):
