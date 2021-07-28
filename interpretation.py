@@ -1,4 +1,4 @@
-from .utilities import create_trivial_argument, get_endpoints, prob
+from .utilities import create_trivial_argument, get_endpoints, prob, is_sub_argument
 
 import networkx as nx
 import pandas as pd
@@ -7,10 +7,7 @@ import numpy as np
 from google.colab import widgets
 
 # INTERPRETING SCORING TABLE
-is_sub_argument = lambda arg1, arg2: \
- set(arg1.observations.items()) <= set(arg2.observations.items()) \
- and set(arg1.nodes) <= set(arg2.nodes) \
- and set(arg1.edges) <= set(arg2.edges)
+
 
 def read_scoring_table(model, target, evidence, scoring_table, 
                        verbose=False, interactive = False):

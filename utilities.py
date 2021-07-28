@@ -161,6 +161,10 @@ def get_adjacent_factors_scope(model, node):
                    for child in model.get_children(node))
   return frozenset([upper_factor]) | lower_factors
 
+is_sub_argument = lambda arg1, arg2: \
+ set(arg1.observations.items()) <= set(arg2.observations.items()) \
+ and set(arg1.nodes) <= set(arg2.nodes) \
+ and set(arg1.edges) <= set(arg2.edges)
 
 # ERROR INTRODUCTION
 random_evidence = lambda model, evidence_nodes : \
