@@ -165,6 +165,13 @@ is_sub_argument = lambda arg1, arg2: \
  set(arg1.observations.items()) <= set(arg2.observations.items()) \
  and set(arg1.nodes) <= set(arg2.nodes) \
  and set(arg1.edges) <= set(arg2.edges)
+ 
+def get_target(argument):
+  for node in argument.nodes:
+    if argument.in_degree(node) == 0:
+      return node
+  
+  assert False, "The argument loops on itself and has no conclusion"
 
 # ERROR INTRODUCTION
 random_evidence = lambda model, evidence_nodes : \

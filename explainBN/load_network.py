@@ -1,4 +1,3 @@
-import wget
 import zipfile
 import os
 import pandas as pd
@@ -6,34 +5,17 @@ import pandas as pd
 from pgmpy.readwrite import BIFReader
 from pgmpy.inference import VariableElimination
 
-#MAIN UTILITY
-dne_gist_urls = {
-    "three_nations" : "https://gist.githubusercontent.com/Jsevillamol/55aabeb9962d22db05c291a746cf7bad/raw/f141df25463f05ccab44576eb8a8ae86fb05ae9b/three_nations.dne"
-}
+# LOAD BAYESIAN NETWORK
 
-def load_network(network_name, verbose=False):
+def load_network(network_name, online = False, verbose=False):
   """ Download a network from the internet, convert it to a PGMPY Bayesian Network, 
       select a target node, attach verbal explanations if available
       Available networks: "asia", "cancer", "earthquake", "sachs", "survey", 
-                          "alarm", "child", "three_nations", "barley", 
+                          "alarm", "child", "barley", 
                           "child", "insurance", "mildew", "water", "hailfinder", 
                           "hepar2", "win95pts"
   """
-
-  if network_name in dne_gist_urls:
-    url = dne_gist_urls[network_name]
-    fn = wget.download(url)
-    model = read_dne(fn)
-    os.remove(fn)
-
-    # Manually add states
-    model.states = {}
-    for node in model.nodes:
-      cpd = model.get_cpds(node)
-      card = cpd.get_cardinality([node])[node]
-      model.states[node] = [cpd.get_state_names(node, i) for i in range(card)]
-
-  else:
+  if online:
     url = f"https://www.bnlearn.com/bnrepository/{network_name}/{network_name}.bif.gz"
     os.system(f"wget {url} -q")
     fn = f"{network_name}.bif.gz"
@@ -41,8 +23,12 @@ def load_network(network_name, verbose=False):
     fn = f"{network_name}.bif"
     reader = BIFReader(fn)
     os.system(f"rm {fn}")
-    model = reader.get_model()
-    model.states = reader.get_states()
+  else:
+    fn = f"exampleBNs/{network_name}.bif"
+    reader = BIFReader(fn)
+    
+  model = reader.get_model()
+  model.states = reader.get_states()
 
   # Dictionary of targets and evidence_nodes
   NETWORK_NODES = {

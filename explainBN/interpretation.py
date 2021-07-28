@@ -1,16 +1,16 @@
-from .utilities import create_trivial_argument, get_endpoints, prob, is_sub_argument
+from .utilities import create_trivial_argument, get_endpoints, prob, is_sub_argument, get_target
 
 import networkx as nx
 import pandas as pd
 import numpy as np
 
-from google.colab import widgets
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 
 # INTERPRETING SCORING TABLE
 
-
-def read_scoring_table(model, target, evidence, scoring_table, 
-                       verbose=False, interactive = False):
+def read_scoring_table(model, target, evidence, scoring_table, interactive = False):
   # Find baseline entry and drop it from table
   baseline_entry = scoring_table.iloc[0]
   score = baseline_entry["score"]
@@ -36,63 +36,71 @@ def read_scoring_table(model, target, evidence, scoring_table,
   
   scoring_table = pd.DataFrame(minimal_rows)
 
-  # Announce baseline in verbose mode
-  if verbose:
+  # Announce baseline in interactive mode
+  if interactive:
+    interactive_output = []
     arguments = [create_trivial_argument(target[0])]
-    tb = widgets.TabBar([str(i) for i in range(len(scoring_table)+2)]) if interactive else None
-    i = 0
-    with tb.output_to(i, select=True) if interactive else nullcontext():
-      i+=1
-      p = 1. / (1./np.exp(score) + 1.)
-      print("")
-      print(baseline_entry["explanation"])
-      if interactive: draw_model(model, arguments)
+    fn = f"graph_{len(interactive_output)}.png"
+    draw_model(model, arguments, output_fn = f"static/{fn}")
+    
+    interactive_output.append({
+      "text" : [baseline_entry["explanation"]],
+      "img"  : fn,
+      })
+        
 
   # Process each relevant argument
   for index, row in scoring_table.iterrows():
     # Add precomputed score contribution to current score
     old_score = score
     score += row['score']
-
-    if verbose:
-      with tb.output_to(i, select=False) if interactive else nullcontext():
-        i+=1
-        for line in row["explanation"]: print(line)
-                
-        old_p = 1. / (1./np.exp(old_score) + 1.)
-        p = 1. / (1./np.exp(score) + 1.)
-        explanation = model.explanation_dictionary[target]["explanation"]
-        print(f"This consideration changes the probability that {explanation} from {old_p*100:0.2f}% to {p*100:0.2f}%")
-        if interactive: draw_model(model, [row['argument']])
-        else: print("")
-        arguments.append(row['argument'])
-
-
-  if verbose:
-    with tb.output_to(i, select=False) if interactive else nullcontext():
-      p = 1 / (1 + 1 / np.exp(score))
-      explanation = model.explanation_dictionary[target]["explanation"]
+    
+    if interactive:
       
-      print(f"After taking into account these {i} arguments, we conclude that ")
-      print(f"the probability that {explanation} is {p*100:0.2f}%")
+      old_p = 1. / (1./np.exp(old_score) + 1.)
+      p = 1. / (1./np.exp(score) + 1.)
+      argument = row["explanation"]
+      explanation = model.explanation_dictionary[target]["explanation"]
+      commentary = f"This consideration changes the probability that {explanation} from {old_p*100:0.2f}% to {p*100:0.2f}%"
+      text = row["explanation"] + [commentary]
+      
+      fn = f"graph_{len(interactive_output)}.png"
+      draw_model(model, [row['argument']], output_fn = f"static/{fn}")
+      
+      arguments.append(row['argument'])
+      
+      interactive_output.append({
+        "text" : text,
+        "img"  : fn,
+        })
 
-      p = prob(model, target, dict(evidence))
-      print(f"For comparison, the estimation of the probability using message passing is {p*100:0.2f}%")
-      if interactive: draw_model(model, arguments)
+  if interactive:
+    
+    p = 1 / (1 + 1 / np.exp(score))
+    explanation = model.explanation_dictionary[target]["explanation"]
+    
+    text = f"After taking into account these {len(interactive_output)} arguments, we conclude that " + \
+           f"the probability that {explanation} is {p*100:0.2f}%"
+    
+    fn = f"graph_{len(interactive_output)}.png"    
+    draw_model(model, arguments, output_fn = f"static/{fn}")
 
-  return score
+    # p = prob(model, target, dict(evidence))
+    # print(f"For comparison, the estimation of the probability using message passing is {p*100:0.2f}%")
+    
+    interactive_output.append({
+        "text" : [text],
+        "img"  : fn,
+        })
+      
+    return interactive_output
+
+  else: return score
 
 # DRAWING GRAPHS WITH HIGHLIGHTED PATHS
 swap = lambda edge : (edge[1], edge[0])
 
-def get_target(argument):
-  for node in argument.nodes:
-    if argument.in_degree(node) == 0:
-      return node
-  
-  assert False, "The argument loops on itself and has no conclusion"
-
-def draw_model(model, arguments=[], argument=None):
+def draw_model(model, arguments=[], argument=None, output_fn = "static/graph.png"):
   G = model
   df = pd.DataFrame(index=G.nodes(), columns=G.nodes())
   for row, data in nx.shortest_path_length(G):
@@ -135,6 +143,8 @@ def draw_model(model, arguments=[], argument=None):
   else:
     node_color_map = 'yellow'
     edge_color_map = 'green'
+   
+  f = plt.figure()
 
   nx.draw(G, pos, 
           node_size = 800,
@@ -143,10 +153,13 @@ def draw_model(model, arguments=[], argument=None):
           node_color = node_color_map,
           edge_color = edge_color_map,
           font_weight = 'bold')
+          
+  f.savefig(output_fn)
   
 # CONTROL VISUALIZATION
-import ipywidgets
+
 def display_control_visualization(model, target, evidence_nodes):
+  import ipywidgets
   evidence_widgets = {}
   for node in evidence_nodes:
     assert 'UNKNOWN' not in model.states[node]

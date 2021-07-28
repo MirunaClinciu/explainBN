@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+	<h1>Survey on Bayesian Networks</h1>
+  
+  <!-- Bayesian Network graph -->
+	<img src="{{ url_for('static', filename=bn_graph) }}" />
+	
+  <!-- Table with explanation of the variables in the BN -->
+  {{ variable_description|safe }}
+  <!--{% for table in tables %}
+    <!-- {{titles[loop.index]}} 
+    {{ table|safe }}
+  {% endfor %} -->
+  
+  <!-- Observed evidence -->
+  {% for output in interactive_output %}
+    <div class="tabcontent">
+    {% for line in output.text %}
+      <p> {{ line }} </p>
+    {% endfor %}
+    <img src="{{ url_for('static', filename=output.img) }}" />
+    </div>
+  {% endfor %}
+  
+  <!-- Interactive container with the explanation -->
+  <p> Placeholder for explanation <p>
+	  
+  <form action="." method="POST">
+    <p> Is there a mistake in the network? </p>
+    <input type="text" name="text1">
+    <p> If so, where is the mistake? </p>
+    <input type="text" name="text2">
+    <input type="submit" name="my-form" value="Submit">
+  </form>
+  
+  
+    
+</body>
+</html>
