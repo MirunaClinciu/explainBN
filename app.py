@@ -23,11 +23,15 @@ def my_form():
                                            
     evidence = random_evidence(model, evidence_nodes)
     
-    interactive_output = read_scoring_table(model, target, evidence, scoring_table, interactive = True)
+    interactive_output = read_scoring_table(model, target, evidence, 
+                                            scoring_table, 
+                                            interactive = True)
+                                            
+    variable_description = model.variable_description.to_html(classes='data')
     
     return render_template("template.html",
                            bn_graph=bn_graph_fn,
-                           variable_description=model.variable_description.to_html(classes='data'),
+                           variable_description=variable_description,
                            interactive_output = interactive_output,
                            )
 
