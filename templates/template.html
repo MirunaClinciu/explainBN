@@ -8,12 +8,8 @@
 	
   <!-- Table with explanation of the variables in the BN -->
   {{ variable_description|safe }}
-  <!--{% for table in tables %}
-    <!-- {{titles[loop.index]}} 
-    {{ table|safe }}
-  {% endfor %} -->
   
-  <!-- Observed evidence -->
+  <!-- Interactive container with the explanation -->
   {% for output in interactive_output %}
     <div class="tabcontent">
     {% for line in output.text %}
@@ -23,9 +19,10 @@
     </div>
   {% endfor %}
   
-  <!-- Interactive container with the explanation -->
-  <p> Placeholder for explanation <p>
-	  
+  <!-- Javascript visualization -->
+  
+  
+	<!-- Survey -->  
   <form action="." method="POST">
     <p> Is there a mistake in the network? </p>
     <input type="text" name="text1">
