@@ -3,6 +3,8 @@ from flask import request
 from flask import render_template
 from flask_ngrok import run_with_ngrok
 
+import numpy as np
+
 from explainBN.load_network import load_network
 from explainBN.scoring_table import generate_scoring_table
 from explainBN.interpretation import draw_model, read_scoring_table
@@ -30,9 +32,11 @@ def my_form():
     variable_description = model.variable_description.to_html(classes='data')
     
     return render_template("template.html",
+                           bn_model = model,
                            bn_graph=bn_graph_fn,
                            variable_description=variable_description,
                            interactive_output = interactive_output,
+                           squeeze_fn = np.squeeze, # Yes I know this is very hacky
                            )
 
 @app.route('/', methods=['POST'])
