@@ -130,10 +130,10 @@ def draw_model(model, arguments=[], argument=None, output_fn = "static/graph.png
       
     target = get_target(argument)
 
-    node_color_map = ['orange' if node == target else
-                      'blue' if node in sources else 
-                      'green' if node in nodes_to_color else 
-                      'gray' 
+    node_color_map = ['LightSalmon' if node == target else
+                      'LightSkyBlue' if node in sources else 
+                      'PaleGreen' if node in nodes_to_color else 
+                      'LightGray' 
                       for node in model]
         
     edge_color_map = ['green' if edge in edges_to_color 
@@ -141,17 +141,19 @@ def draw_model(model, arguments=[], argument=None, output_fn = "static/graph.png
                       else 'gray' 
                       for edge in model.edges]
   else:
-    node_color_map = 'yellow'
+    node_color_map = 'Moccasin'
     edge_color_map = 'green'
    
   f = plt.figure()
 
   nx.draw(G, pos, 
-          node_size = 800,
-          width = 3,
+          node_size = 1800,
+          width = 5,
           with_labels=True, 
           node_color = node_color_map,
           edge_color = edge_color_map,
+          font_family = 'Arial',
+          font_size= 12, 
           font_weight = 'bold')
           
   f.savefig(output_fn)
